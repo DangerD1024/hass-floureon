@@ -10,9 +10,11 @@ from custom_components.floureon import (
     CONF_HOST,
     CONF_MAC,
     CONF_USE_EXTERNAL_TEMP,
+    CONF_USE_BOTH_TEMP,
     CONF_SCHEDULE,
     DEFAULT_SCHEDULE,
     DEFAULT_USE_EXTERNAL_TEMP,
+    DEFAULT_USE_BOTH_TEMP,
     BROADLINK_ACTIVE,
     BROADLINK_IDLE,
     BROADLINK_POWER_ON,
@@ -21,6 +23,7 @@ from custom_components.floureon import (
     BROADLINK_MODE_MANUAL,
     BROADLINK_SENSOR_INTERNAL,
     BROADLINK_SENSOR_EXTERNAL,
+    BROADLINK_SENSOR_BOTH,
     BROADLINK_TEMP_AUTO,
     BROADLINK_TEMP_MANUAL
 )
@@ -63,6 +66,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_MAC): cv.string,
     vol.Optional(CONF_SCHEDULE, default=DEFAULT_SCHEDULE): vol.All(int, vol.Range(min=0,max=2)),
     vol.Optional(CONF_USE_EXTERNAL_TEMP, default=DEFAULT_USE_EXTERNAL_TEMP): cv.boolean,
+    vol.Optional(CONF_USE_BOTH_TEMP, default=DEFAULT_USE_BOTH_TEMP): cv.boolean,
 })
 
 
@@ -83,7 +87,7 @@ class FloureonClimate(ClimateEntity, RestoreEntity):
 
         self._name = config.get(CONF_NAME)
         self._use_external_temp = config.get(CONF_USE_EXTERNAL_TEMP)
-
+        self._use_both_temp = config.get(CONF_USE_BOTH_TEMP)
         self._min_temp = DEFAULT_MIN_TEMP
         self._max_temp = DEFAULT_MAX_TEMP
         self._room_temp = None
@@ -102,7 +106,8 @@ class FloureonClimate(ClimateEntity, RestoreEntity):
 
     def thermostat_get_sensor(self) -> int:
         """Get sensor to use"""
-        return BROADLINK_SENSOR_EXTERNAL if self._use_external_temp is True else BROADLINK_SENSOR_INTERNAL
+        sensor = BROADLINK_SENSOR_EXTERNAL if self._use_external_temp is True else BROADLINK_SENSOR_INTERNAL
+        return BROADLINK_SENSOR_BOTH if self._use_both_temp is True else sensor
 
     @property
     def name(self) -> str:
@@ -276,6 +281,7 @@ class FloureonClimate(ClimateEntity, RestoreEntity):
         self._external_temp = data['external_temp']
 
         self._thermostat_current_temp = data['external_temp'] if self._use_external_temp else data['room_temp']
+        self._thermostat_current_temp = data['external_temp'] if self._use_both_temp else self._thermostat_current_temp
 
         # self._hysteresis = int(data['dif'])
         self._min_temp = int(data['svl'])

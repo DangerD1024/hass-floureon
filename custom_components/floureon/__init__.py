@@ -22,10 +22,12 @@ BROADLINK_TEMP_MANUAL = 1
 CONF_HOST = 'host'
 CONF_MAC = 'mac'
 CONF_USE_EXTERNAL_TEMP = 'use_external_temp'
+CONF_USE_BOTH_TEMP = 'use_both_temp'
 CONF_SCHEDULE = 'schedule'
 
 DEFAULT_SCHEDULE = 0
 DEFAULT_USE_EXTERNAL_TEMP = True
+DEFAULT_USE_BOTH_TEMP = False
 
 
 class BroadlinkThermostat:

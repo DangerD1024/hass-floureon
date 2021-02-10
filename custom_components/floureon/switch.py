@@ -4,15 +4,17 @@ from custom_components.floureon import (
     CONF_HOST,
     CONF_MAC,
     CONF_USE_EXTERNAL_TEMP,
-    CONF_USE_EXTERNAL_TEMP,
+    CONF_USE_BOTH_TEMP,
     DEFAULT_SCHEDULE,
     DEFAULT_USE_EXTERNAL_TEMP,
+    DEFAULT_USE_BOTH_TEMP,
     BROADLINK_POWER_ON,
     BROADLINK_POWER_OFF,
     BROADLINK_MODE_MANUAL,
     BROADLINK_ACTIVE,
     BROADLINK_SENSOR_EXTERNAL,
-    BROADLINK_SENSOR_INTERNAL
+    BROADLINK_SENSOR_INTERNAL,
+    BROADLINK_SENSOR_BOTH
 )
 
 import logging
@@ -53,6 +55,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_NAME): cv.string,
     vol.Optional(CONF_MAC): cv.string,
     vol.Optional(CONF_USE_EXTERNAL_TEMP, default=DEFAULT_USE_EXTERNAL_TEMP): cv.boolean,
+    vol.Optional(CONF_USE_BOTH__TEMP, default=DEFAULT_USE_BOTH_TEMP): cv.boolean,
     vol.Optional(CONF_TURN_OFF_MODE, default=DEFAULT_TURN_OFF_MODE): vol.Any(BROADLINK_MIN_TEMP, BROADLINK_TURN_OFF),
     vol.Optional(CONF_TURN_ON_MODE, default=DEFAULT_TURN_ON_MODE): vol.Any(float, BROADLINK_MAX_TEMP)
 })
@@ -82,12 +85,14 @@ class FloureonSwitch(SwitchDevice, RestoreEntity):
         self._turn_on_mode = config.get(CONF_TURN_ON_MODE)
         self._turn_off_mode = config.get(CONF_TURN_OFF_MODE)
         self._use_external_temp = config.get(CONF_USE_EXTERNAL_TEMP)
+        self._use_both_temp = config.get(CONF_USE_BOTH_TEMP)
 
         self._state = STATE_UNAVAILABLE
 
     def thermostat_get_sensor(self) -> int:
         """Get sensor to use"""
-        return BROADLINK_SENSOR_EXTERNAL if self._use_external_temp is True else BROADLINK_SENSOR_INTERNAL
+        sensor = BROADLINK_SENSOR_EXTERNAL if self._use_external_temp is True else BROADLINK_SENSOR_INTERNAL
+        return BROADLINK_SENSOR_BOTH if self._use_both_temp is True else sensor
 
     @property
     def name(self) -> str:
