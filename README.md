@@ -14,6 +14,7 @@ If you want to use custom or more advanced controll, you should use switch compo
 | name ***(required)*** | string | | Set a custom name which is displayed beside the icon.
 | schedule | integer | `0` | Set which schedule to use (0 - `12345,67`, 1 - `123456,7`, 2 - `1234567`)
 | use_external_temp | boolen | `true` | Set to false if you want to use thermostat`s internal temperature sensor for temperature calculation
+| use_both_temp | boolen | `false` | Set to true if you want to use both thermostat`s sensor to avoid overheating floor (don't forget to setup external temperature limit in settings)
 
 #### Example:
 ```yaml
